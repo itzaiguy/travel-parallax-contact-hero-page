@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sigiriya | Balloon Parallax</title>
+    
+    <!-- Added Fonts and Icons from blog page -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --framer-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+            --white: #ffffff;
+            --black: #0e0e0e; 
+            --grey-light: #f5f5f5; 
+            --primary-orange: #FF5A00;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #fff;
+            overflow-x: hidden;
+            font-family: 'Inter', -apple-system, sans-serif;
+        }
+
+        /* --- NAVIGATION STYLES (Extracted from blog page) --- */
+        /* SIMPLE FIXED NAVIGATION */
+        .site-header {
+            position: fixed;
+            top: 20px;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            padding: 15px 5%;
+            gap: 20px;
+            background: transparent;
+            box-shadow: none;
+            transition: all 0.3s ease;
+        }
+
+        /* Scrolled state for header */
+        .site-header.scrolled {
+            background: transparent;
+            box-shadow: none;
+        }
+
+        /* Logo */
+        .logo {
+            width: 150px;
+            height: auto;
+            display: flex;
+            align-items: center;
+            margin-left: 40px;
+        }
+
+        .logo img {
+            width: 100%;
+            height: auto;
+            max-width: 100%;
+            object-fit: contain;
+        }
+
+        /* Navigation Center */
+        .nav-center {
+            background: rgba(245, 245, 245, 0.9);
+            backdrop-filter: blur(15px);
+            padding: 10px 30px;
+            border-radius: 100px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex; 
+            gap: 30px;
+            justify-self: center;
+        }
+
+        .rolling-link { 
+            text-decoration: none; 
+            display: inline-flex; 
+            overflow: hidden; 
+            position: relative; 
+            color: inherit; 
+        }
+        .rolling-text { 
+            display: block; 
+            overflow: hidden; 
+            height: 18px; 
+            line-height: 18px; 
+            position: relative; 
+        }
+        .rolling-text span { 
+            display: block; 
+            position: relative; 
+            transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1); 
+        }
+        .rolling-text span::after { 
+            content: attr(data-text); 
+            position: absolute; 
+            left: 0; 
+            top: 100%; 
+            white-space: nowrap; 
+        }
+        .rolling-link:hover .rolling-text span { 
+            transform: translateY(-100%); 
+        }
+        .nav-link { 
+            color: var(--black); 
+            font-size: 14px; 
+            font-weight: 500; 
+        }
+
+        /* Header Right */
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            justify-self: end;
+        }
+
+        /* Book Now Button - WHITE initially */
+        .btn-join { 
+            background: var(--white);
+            color: var(--black);
+            padding: 12px 25px; 
+            border-radius: 100px; 
+            font-weight: 600; 
+            text-decoration: none; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            transition: all 0.3s ease; 
+            font-size: 13px;
+            white-space: nowrap;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-join:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+        }
+
+        /* When scrolled - BLACK background */
+        .site-header.scrolled .btn-join { 
+            background: var(--black);
+            color: var(--white);
+        }
+
+        .site-header.scrolled .btn-join:hover {
+            background: #333;
+        }
+
+        .btn-join .rolling-text span {
+            color: var(--black) !important;
+            transition: color 0.3s ease;
+        }
+
+        /* When scrolled - white text */
+        .site-header.scrolled .btn-join .rolling-text span {
+            color: var(--white) !important;
+        }
+
+        /* ===== LANGUAGE TRANSLATOR DROPDOWN ===== */
+        .lang-switcher {
+            position: relative;
+            margin-left: auto;
+            margin-right: 5px;
+        }
+
+        .lang-btn {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 12px;
+            border-radius: 100px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--black);
+            transition: all 0.3s ease;
+            min-width: 70px;
+            justify-content: space-between;
+        }
+
+        .lang-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: scale(1.05);
+        }
+
+        .lang-btn img {
+            width: 18px;
+            height: 12px;
+            border-radius: 2px;
+            object-fit: cover;
+        }
+
+        .lang-btn i {
+            font-size: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .lang-btn.active i {
+            transform: rotate(180deg);
+        }
+
+        .lang-dropdown {
+            position: absolute;
+            top: 45px;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            width: 180px;
+            display: none;
+            z-index: 2000;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+        }
+
+        .lang-dropdown.show {
+            display: block;
+            animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .lang-option {
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #333;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .lang-option:last-child {
+            border-bottom: none;
+        }
+
+        .lang-option:hover {
+            background: rgba(0, 0, 0, 0.05);
+            color: #008459;
+        }
+
+        .lang-option img {
+            width: 22px;
+            height: 14px;
+            border-radius: 2px;
+            object-fit: cover;
+        }
+
+        /* PC ONLY DROPDOWN STYLES */
+        @media (min-width: 993px) {
+            .nav-dropdown {
+                position: relative;
+                display: flex;
+                align-items: center;
+            }
+
+            /* The upside-down > icon */
+            .dropdown-icon {
+                font-size: 12px;
+                margin-left: 6px;
+                transition: transform 0.4s ease;
+                color: inherit;
+            }
+
+            /* Small window (Dropdown Menu) */
+            .dropdown-menu {
+                position: absolute;
+                top: 100%;
+                left: 50%;
+                transform: translateX(-50%) translateY(15px);
+                background: white;
+                min-width: 180px;
+                border-radius: 0;
+                padding: 15px 0;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+                z-index: 1000;
+                border: 1px solid rgba(0,0,0,0.05);
+            }
+
+            /* Individual links inside the small window */
+            .dropdown-menu a {
+                display: block;
+                padding: 10px 20px;
+                color: #333;
+                text-decoration: none;
+                font-size: 14px;
+                font-weight: 500;
+                border-radius: 0;
+                transition: background 0.2s ease, color 0.2s ease;
+            }
+
+            .dropdown-menu a:hover {
+                background-color: #f8f8f5;
+                color: #008459;
+            }
+
+            /* Hover Interactions */
+            .nav-dropdown:hover .dropdown-menu {
+                opacity: 1;
+                visibility: visible;
+                transform: translateX(-50%) translateY(5px);
+            }
+
+            /* Rotates the icon when hovering */
+            .nav-dropdown:hover .dropdown-icon {
+                transform: rotate(180deg);
+            }
+        }
+
+        /* Mobile menu button - HIDDEN BY DEFAULT on desktop */
+        .mobile-menu-btn {
+            display: none;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            color: var(--black);
+            font-size: 22px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mobile-menu-btn:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: scale(1.05);
+        }
+
+        /* Mobile Menu Overlay */
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.98);
+            backdrop-filter: blur(20px);
+            z-index: 9999;
+            transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .mobile-menu.active {
+            right: 0;
+        }
+
+        .mobile-menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0 40px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .mobile-menu-header .logo img {
+            width: 140px;
+            height: auto;
+            filter: brightness(0) invert(1);
+        }
+
+        .mobile-menu-close {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            color: white;
+            font-size: 22px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu-close:hover {
+            background: rgba(255,255,255,0.25);
+            transform: rotate(90deg);
+        }
+
+        /* Mobile Navigation */
+        .mobile-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            padding: 40px 0;
+        }
+
+        .mobile-nav-link {
+            color: white;
+            text-decoration: none;
+            font-size: 20px;
+            font-weight: 500;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .mobile-nav-link:hover {
+            color: #fff;
+            padding-left: 15px;
+            border-color: rgba(255,255,255,0.3);
+        }
+
+        .mobile-nav-link.btn-mobile-plan {
+            background: white;
+            color: black !important;
+            padding: 18px 30px;
+            border-radius: 100px;
+            font-weight: 600;
+            text-align: center;
+            justify-content: center;
+            margin-top: 20px;
+            border: none;
+            font-size: 18px;
+        }
+
+        .mobile-nav-link.btn-mobile-plan:hover {
+            background: #f0f0f0;
+            padding-left: 30px;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 992px) {
+            .lang-switcher {
+                display: none;
+            }
+            
+            .nav-center {
+                display: none !important;
+            }
+            
+            .mobile-menu-btn {
+                display: flex;
+            }
+            
+            .site-header {
+                grid-template-columns: auto 1fr;
+                padding: 15px 15px;
+                gap: 15px;
+                top: 15px;
+            }
+            
+            .logo {
+                width: 120px;
+                margin-left: 0;
+            }
+            
+            .header-right {
+                justify-content: flex-end;
+                gap: 12px;
+            }
+            
+            .btn-join {
+                padding: 10px 20px;
+                font-size: 13px;
+                white-space: nowrap;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .site-header {
+                padding: 12px 15px;
+                top: 10px;
+            }
+            
+            .logo {
+                width: 100px;
+            }
+            
+            .header-right {
+                gap: 8px;
+            }
+            
+            .btn-join {
+                padding: 8px 16px;
+                font-size: 12px;
+            }
+            
+            .mobile-menu-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .site-header {
+                top: 8px;
+            }
+            
+            .header-right {
+                gap: 6px;
+            }
+            
+            .btn-join {
+                padding: 8px 12px;
+                font-size: 11px;
+            }
+            
+            .mobile-menu-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+            }
+            
+            .mobile-nav-link {
+                font-size: 18px;
+                padding: 12px 0;
+            }
+        }
+
+        /* PARALLAX HERO STYLES */
+        .hero-viewport {
+            position: relative;
+            height: 100vh;
+            width: 100%;
+            overflow: hidden;
+            background: #fff;
+        }
+
+        .layer {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 120%;
+            background-size: cover;
+            background-position: center;
+            will-change: transform, opacity;
+            pointer-events: none;
+        }
+
+        /* LAYER 1: SKY */
+        .layer-bg {
+            top: -10%;
+            background-image: url('assets/images/contact page/image1.jpeg');
+            z-index: 1;
+            opacity: 0;
+            transform: scale(1.1);
+        }
+
+        /* LAYER 2: CONTACT TEXT */
+        .hero-title {
+            position: absolute;
+            width: 100%;
+            top: 35%; 
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+            text-align: center;
+            color: white;
+        }
+
+        /* Add these styles to your existing hero-title h1 styles */
+
+.hero-title h1 {
+    font-size: clamp(3rem, 10vw, 12rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -2px;
+    opacity: 0;
+    filter: blur(15px);
+    transform: translateY(30px);
+    transition: all 1.2s var(--framer-ease) 0.5s;
+    /* ADD THESE LINES FOR TEXT OUTLINE/GLOW */
+    text-shadow: 
+        2px 2px 0 #000,
+        -2px -2px 0 #000,
+        2px -2px 0 #000,
+        -2px 2px 0 #000,
+        0 2px 0 #000,
+        2px 0 0 #000,
+        0 -2px 0 #000,
+        -2px 0 0 #000,
+        2px 2px 5px rgba(0,0,0,0.7),
+        0 0 20px rgba(0,0,0,0.5);
+    color: #ffffff;
+    position: relative;
+}
+
+        /* LAYER 3: HOT AIR BALLOONS (assets/images/contact page/image11.png) */
+        .balloon-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        .balloon {
+            position: absolute;
+            background-image: url('assets/images/contact page/image11.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0;
+            transition: opacity 2s ease 0.8s;
+            will-change: transform;
+        }
+
+        /* Placing 3 balloons at different heights/sizes */
+        .balloon-1 { width: 80px; height: 120px; top: 10%; left: 15%; }
+        .balloon-2 { width: 120px; height: 180px; top: 20%; right: 20%; }
+        .balloon-3 { width: 60px; height: 90px; top: 5%; right: 40%; filter: blur(1px); }
+
+        /* LAYER 4: SIGIRIYA ROCK */
+        .layer-rock {
+            top: -5%;
+            background-image: url('assets/images/contact page/image3.png');
+            z-index: 4;
+            opacity: 0;
+            transform: translateY(80px);
+        }
+
+        /* NEW LAYER: image4.png - PERFECT POSITIONING */
+        .layer-rock-bottom {
+            position: absolute;
+            top: auto;
+            bottom: -50px; /* Position at bottom */
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background-image: url('assets/images/contact page/image4.png');
+            z-index: 5;
+            opacity: 0;
+            transform: translateY(150px) scale(0.7); /* Start further down */
+            background-size: contain;
+            background-position: center bottom;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        /* ENTRANCE */
+        .reveal-active .layer-bg { opacity: 1; transform: scale(1); transition: all 1.8s var(--framer-ease); }
+        .reveal-active .layer-rock { opacity: 1; transform: translateY(20px); transition: all 1.8s var(--framer-ease) 0.2s; }
+        .reveal-active .layer-rock-bottom { opacity: 1; transform: translateY(50px) scale(0.7); transition: all 1.8s var(--framer-ease) 0.3s; }
+        .reveal-active .hero-title h1 { opacity: 1; filter: blur(0); transform: translateY(0); }
+        .reveal-active .balloon { opacity: 1; }
+
+        .footer { 
+            height: 100vh; 
+            background: #fff; 
+            position: relative;
+            z-index: 10; /* Higher than hero images */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header with Navigation (Extracted from blog page) -->
+    <header class="site-header" id="mainHeader">
+        <a href="index.html" class="logo">
+            <img src="assets/images/headerlogo.png" alt="Around the Sri Lanka">
+        </a>
+        
+        <nav class="nav-center">
+            <a href="index.html" class="rolling-link nav-link"><div class="rolling-text"><span data-text="Home">Home</span></div></a>
+            
+            <div class="nav-dropdown">
+                <a href="tours.html" class="rolling-link nav-link">
+                    <div class="rolling-text"><span data-text="Tour Packages">Tour Packages</span></div>
+                    <i class="fa-solid fa-caret-down dropdown-icon"></i>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="tours.html#adventure">Anuradhapura day tour</a>
+                    <a href="tours.html#cultural">05 days sightseeing tour</a>
+                    <a href="tours.html#wildlife">08 days culture tour</a>
+                    <a href="tours.html#wildlife">10 days classic tour</a>
+                    <a href="tours.html#wildlife">Nature tour</a>
+                    <a href="tours.html#wildlife">Jeep Safari</a>
+                </div>
+            </div>
+
+            <div class="nav-dropdown">
+                <a href="#about" class="rolling-link nav-link">
+                    <div class="rolling-text"><span data-text="Experiences">Experiences</span></div>
+                    <i class="fa-solid fa-caret-down dropdown-icon"></i>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="#surfing">Surfing</a>
+                    <a href="#hiking">Hiking</a>
+                    <a href="#tea-tasting">Tea Tasting</a>
+                </div>
+            </div>
+
+            <div class="nav-dropdown">
+                <a href="rent.html" class="rolling-link nav-link">
+                    <div class="rolling-text"><span data-text="Rent a Vehicle">Rent a Vehicle</span></div>
+                    <i class="fa-solid fa-caret-down dropdown-icon"></i>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="rent.html#car">Car rental</a>
+                    <a href="rent.html#bike">Bike rental</a>
+                    <a href="rent.html#tuktuk">Tuktuk rental</a>
+                </div>
+            </div>
+            <a href="#faq" class="rolling-link nav-link"><div class="rolling-text"><span data-text="Faq">Faq</span></div></a>
+            <a href="contactus.html" class="rolling-link nav-link"><div class="rolling-text"><span data-text="Contact">Contact</span></div></a>
+        </nav>
+        
+        <div class="header-right">
+            <!-- Language Translator Dropdown -->
+            <div class="lang-switcher">
+                <button class="lang-btn" id="langBtn">
+                    <img id="current-flag" src="https://flagcdn.com/w20/us.png" alt="English Flag">
+                    <span id="current-lang">EN</span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </button>
+
+                <div class="lang-dropdown" id="langDropdown">
+                    <div class="lang-option" data-lang="en" data-country="us" data-name="English">
+                        <img src="https://flagcdn.com/w20/us.png" alt="English"> English
+                    </div>
+                    <div class="lang-option" data-lang="fr" data-country="fr" data-name="Français">
+                        <img src="https://flagcdn.com/w20/fr.png" alt="French"> Français
+                    </div>
+                    <div class="lang-option" data-lang="es" data-country="es" data-name="Español">
+                        <img src="https://flagcdn.com/w20/es.png" alt="Spanish"> Español
+                    </div>
+                    <div class="lang-option" data-lang="de" data-country="de" data-name="Deutsch">
+                        <img src="https://flagcdn.com/w20/de.png" alt="German"> Deutsch
+                    </div>
+                    <div class="lang-option" data-lang="it" data-country="it" data-name="Italiano">
+                        <img src="https://flagcdn.com/w20/it.png" alt="Italian"> Italiano
+                    </div>
+                    <div class="lang-option" data-lang="si" data-country="lk" data-name="සිංහල">
+                        <img src="https://flagcdn.com/w20/lk.png" alt="Sinhala"> සිංහල (Sinhala)
+                    </div>
+                    <div class="lang-option" data-lang="zh-CN" data-country="cn" data-name="中文">
+                        <img src="https://flagcdn.com/w20/cn.png" alt="Chinese"> 中文 (Chinese)
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn-join rolling-link">
+                <div class="rolling-text"><span data-text="BOOK NOW">BOOK NOW</span></div> <i class="fa-solid fa-paper-plane"></i>
+            </button>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Mobile Menu Overlay (Extracted from blog page) -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-header">
+            <div class="logo"><img src="assets/images/headerlogo.png" alt="Around the Sri Lanka"></div>
+            <button class="mobile-menu-close" id="mobileMenuClose">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <nav class="mobile-nav">
+            <a href="index.html" class="mobile-nav-link">Home</a>
+            <a href="tours.html" class="mobile-nav-link">Tour Packages</a>
+            <a href="#experiences" class="mobile-nav-link">Experiences</a>
+            <a href="rent.html" class="mobile-nav-link">Rent a Vehicle</a>
+            <a href="index.html#faq" class="mobile-nav-link">FAQ</a>
+            <a href="contactus.html" class="mobile-nav-link">Contact</a>
+            <a href="contactus.html" class="mobile-nav-link btn-mobile-plan">BOOK NOW</a>
+        </nav>
+    </div>
+
+    <section class="hero-viewport" id="hero">
+        <div class="layer layer-bg" id="bgLayer"></div>
+        
+        <div class="hero-title">
+            <h1 id="parallaxText">Contact US</h1>
+        </div>
+
+        <div class="balloon-container">
+            <div class="balloon balloon-1" id="b1"></div>
+            <div class="balloon balloon-2" id="b2"></div>
+            <div class="balloon balloon-3" id="b3"></div>
+        </div>
+
+        <div class="layer layer-rock" id="rockLayer"></div>
+        
+        <!-- NEW IMAGE: image4.png added here - PERFECT POSITIONING -->
+        <div class="layer layer-rock-bottom" id="rockBottomLayer"></div>
+    </section>
+
+    <div class="footer"></div>
+
+    <script>
+        // Header scroll effect (Extracted from blog page)
+        const mainHeader = document.getElementById('mainHeader');
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                mainHeader.classList.add('scrolled');
+            } else {
+                mainHeader.classList.remove('scrolled');
+            }
+        });
+
+        // Language Translator Dropdown (Extracted from blog page)
+        document.addEventListener('DOMContentLoaded', function() {
+            const langBtn = document.getElementById('langBtn');
+            const langDropdown = document.getElementById('langDropdown');
+            const currentFlag = document.getElementById('current-flag');
+            const currentLang = document.getElementById('current-lang');
+            const langOptions = document.querySelectorAll('.lang-option');
+            
+            // Toggle dropdown
+            langBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                langDropdown.classList.toggle('show');
+                langBtn.classList.toggle('active');
+            });
+            
+            // Handle language selection
+            langOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    const flag = option.querySelector('img').src;
+                    const lang = option.getAttribute('data-lang');
+                    const name = option.getAttribute('data-name');
+                    
+                    // Update current selection
+                    currentFlag.src = flag;
+                    currentLang.textContent = option.querySelector('img').nextSibling.textContent.trim().split(' ')[0];
+                    
+                    // Close dropdown
+                    langDropdown.classList.remove('show');
+                    langBtn.classList.remove('active');
+                    
+                    // Store selection
+                    localStorage.setItem('selectedLanguage', lang);
+                    localStorage.setItem('selectedLanguageName', name);
+                    localStorage.setItem('selectedLanguageFlag', flag);
+                    
+                    // Here you would typically trigger your translation logic
+                    console.log(`Language changed to: ${name} (${lang})`);
+                });
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!langBtn.contains(e.target) && !langDropdown.contains(e.target)) {
+                    langDropdown.classList.remove('show');
+                    langBtn.classList.remove('active');
+                }
+            });
+            
+            // Load saved language preference
+            const savedLang = localStorage.getItem('selectedLanguage');
+            const savedName = localStorage.getItem('selectedLanguageName');
+            const savedFlag = localStorage.getItem('selectedLanguageFlag');
+            
+            if (savedLang && savedName && savedFlag) {
+                currentFlag.src = savedFlag;
+                currentLang.textContent = savedName.split(' ')[0];
+            }
+            
+            // Mobile Menu Functionality (Extracted from blog page)
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const mobileMenuClose = document.getElementById('mobileMenuClose');
+            
+            if (mobileMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', () => {
+                    mobileMenu.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                });
+                
+                mobileMenuClose.addEventListener('click', () => {
+                    mobileMenu.classList.remove('active');
+                    document.body.style.overflow = 'auto';
+                });
+                
+                document.querySelectorAll('.mobile-nav-link').forEach(link => {
+                    link.addEventListener('click', () => {
+                        mobileMenu.classList.remove('active');
+                        document.body.style.overflow = 'auto';
+                    });
+                });
+            }
+        });
+
+        // Parallax Hero Script
+        window.addEventListener('load', () => {
+            document.getElementById('hero').classList.add('reveal-active');
+        });
+
+        window.addEventListener('scroll', () => {
+            const scroll = window.pageYOffset;
+            
+            const bg = document.getElementById('bgLayer');
+            const rock = document.getElementById('rockLayer');
+            const rockBottom = document.getElementById('rockBottomLayer');
+            const text = document.getElementById('parallaxText');
+            const b1 = document.getElementById('b1');
+            const b2 = document.getElementById('b2');
+            const b3 = document.getElementById('b3');
+
+            // Apply parallax to all elements
+            bg.style.transform = `translate3d(0, ${scroll * 0.3}px, 0)`;
+            text.style.transform = `translate3d(0, ${scroll * 0.55}px, 0)`;
+            
+            // Balloons move at slightly different speeds for a 3D effect
+            b1.style.transform = `translate3d(0, ${scroll * 0.4}px, 0)`;
+            b2.style.transform = `translate3d(0, ${scroll * 0.35}px, 0)`;
+            b3.style.transform = `translate3d(0, ${scroll * 0.45}px, 0)`;
+
+            rock.style.transform = `translate3d(0, ${scroll * 0.15}px, 0)`;
+            
+            // FIXED: Subtle parallax for bottom image - moves up as you scroll down, returns as you scroll up
+            // Using a small multiplier (0.02 = 2%) for subtle movement
+            // The image will move UP (positive Y) as you scroll down, and return DOWN (negative Y) as you scroll up
+            rockBottom.style.transform = `translate3d(0, ${50 + (scroll * 0.02)}px, 0) scale(0.7)`;
+        });
+    </script>
+</body>
+</html>
